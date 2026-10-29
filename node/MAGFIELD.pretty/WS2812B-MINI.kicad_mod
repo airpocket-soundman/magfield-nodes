@@ -1,0 +1,91 @@
+(footprint "WS2812B-MINI"
+		(layer "F.Cu")
+		(uuid "5a6f1e00-0000-4000-8000-000000000304")
+		(at 16 3.2)
+		(property "Reference" "D1"
+			(at 0 2.15 0)
+			(layer "F.SilkS")
+			(uuid "68dfd280-3fbe-4738-85f9-7b6acb2d86f9")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "WS2812B-MINI-V3/W"
+			(at 0 3.2 0)
+			(layer "F.Fab")
+			(uuid "cfe4daa2-dd28-4878-b2c3-a691ee5c9b50")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "43b02d6c-86f6-4972-8bd6-38e026300ce9")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "1b7a5701-09d0-4ea1-9d73-47adf69fa21d")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "63aec59c-150e-4431-b534-87893ccc6fe2")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(attr smd)
+		(pad "1" smd rect
+			(at -1.565 -0.89)
+			(size 1.8 1)
+			(layers "F.Cu" "F.Paste" "F.Mask")
+			(net 9 "VBAT")
+			(uuid "0ab1fcb8-0b40-4558-9bea-63eddad1c900")
+		)
+		(pad "2" smd rect
+			(at -1.565 0.89)
+			(size 1.8 1)
+			(layers "F.Cu" "F.Paste" "F.Mask")
+			(uuid "06a5fac3-c421-4a62-918c-2ac11a33d0eb")
+		)
+		(pad "3" smd rect
+			(at 1.565 0.89)
+			(size 1.8 1)
+			(layers "F.Cu" "F.Paste" "F.Mask")
+			(net 1 "GND")
+			(uuid "5a3166fe-7631-45c6-9552-cbaa288a474a")
+		)
+		(pad "4" smd rect
+			(at 1.565 -0.89)
+			(size 1.8 1)
+			(layers "F.Cu" "F.Paste" "F.Mask")
+			(net 14 "LED_DIN")
+			(uuid "766735f7-8ce7-47bd-9e0a-c45c27b9f348")
+		)
+	)

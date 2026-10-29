@@ -1,0 +1,7 @@
+# KiCad backups / temp
+*.kicad_prl
+*-backups/
+*.bak
+*.kicad_pcb.drc_tmp
+~*.lck
+work/
