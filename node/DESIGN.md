@@ -101,6 +101,9 @@ The node is now connected by a short cable instead of sliding into a slot.
 ## Programming
 
 - UPDI pads **J1** on the top side: UPDI / VBAT / GND (2.54 mm pads, pogo or header).
+  Located mid-west edge at (5.00, 15.60), rotated 90° (moved from the NW
+  corner on 2026-10-30 to free the MH1 mounting hole — see "Mounting
+  holes").
 - UPDI is also routed to **J2 pin 3**, so the dock can reprogram nodes.
 - ATtiny pin map used: PA0 = UPDI, PA1 = SDA, PA2 = SCL, PA4 = LED data,
   PC0 = BMM150 DRDY, PC1 = BMM150 INT. All other GPIOs are unconnected (marked NC).
@@ -276,6 +279,47 @@ in v2, the exception is gone: the setting is restored to the standard
 **0.3 mm**, and the delivered v2 board passes DRC under it. All rules follow
 JLCPCB standard 2-layer capability (≥0.15 mm clearance, via 0.3/0.6 mm,
 hole clearance 0.25 mm).
+
+## Mounting holes (added 2026-10-30, post-final3 revision)
+
+User-requested mechanical fixing: two M2 screw holes on the **NW–SE
+diagonal**.
+
+- **MH1 = (3.15, 3.60)** (NW), **MH2 = (29.30, 29.30)** (SE). Footprint
+  `MountingHole_2.2mm_M2`: NPTH ⌀2.2 mm, no annular copper, excluded from
+  BOM and position files (verified absent from the POS export).
+- Each hole carries a **circular keepout rule area r = 2.5 mm on F.Cu+B.Cu**
+  (no tracks / vias / zone fill; the B.Cu GND pour is carved out around
+  both holes). This also covers the M2 screw-head/washer zone (⌀ ≈ 4.5 mm).
+- Measured minimum copper distance after routing: **MH1 2.64 mm** (UPDI
+  via at (6.09, 3.62)), **MH2 3.06 mm** (SW1 mount pad). DRC keepout rule:
+  clean.
+- **Why NW–SE:** NE is unusable (BMM150 sensor corner + R4/R5 + dense
+  escapes — and magnetic hygiene forbids crowding it). SW and SE were both
+  clear but are not a diagonal. NW was blocked only by the J1 test pads
+  and two local runs, so J1 was relocated instead (below).
+- **Back-side check:** both holes and their keepouts are clear of the BT1
+  holder lands and the cell circle (MH2 centre is 21.9 mm from the cell
+  centre, r = 10 mm). A screw head/washer on the back lands on bare board
+  at both holes — nothing can crush the cell; the closest back copper to
+  MH2 is 3.06 mm away (> washer radius 2.25 mm).
+- **J1 relocation (the only footprint moved; J1 is hand-soldered, NOT in
+  BOM/CPL):** (2.60, 5.00) rot 0° → **(5.00, 15.60) rot 90°**; pads now
+  UPDI (2.46, 15.60) west / VBAT (5.00, 15.60) / GND (7.54, 15.60) east.
+  Local reroutes to free the NW corner: the VBAT bridge via moved east to
+  (7.62, 8.40); the SDA west-edge detour was replaced by a B-layer hop
+  (vias (6.90, 0.86) / (6.85, 5.48)); J1's UPDI feed runs on B.Cu north of
+  the BT1 west pad. Sensor corner and LED feed geometry untouched.
+- **CPL/BOM impact: none.** POS export diffed against
+  `quote/node-cpl-jlcpcb.csv`: all 21 assembled parts identical in
+  position and rotation; BOM unchanged.
+- Verification after the change: **DRC 0 errors / 0 unconnected** (22
+  warnings — the same pre-existing lib-footprint classes listed below),
+  gerbers + drill regenerated (`gerbers/`, `node-gerbers.zip`; the drill
+  file contains both ⌀2.200 holes at the exact coordinates), renders
+  `iterations/final4-front.png` / `final4-back.png`. Scripts:
+  `work/apply_holes.py`, `work/fix_holes2.py`. Pre-change board backed up
+  at `work/pre-holes-backup.kicad_pcb`.
 
 ## Magnetic hygiene (BMM150 self-interference)
 
