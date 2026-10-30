@@ -123,25 +123,77 @@ The node is now connected by a short cable instead of sliding into a slot.
 The B.Cu layer is a solid GND zone (filled, 738 mm²) except where bottom-side
 routing (VBAT_RAW trunk, CELL_N) and the battery-holder pads cross it.
 
-## BOM / LCSC mapping
+## BOM / LCSC mapping — standardized 2026-10-30 (all-LCSC + JLCPCB-SMT)
 
-From `../bom-estimate.md` plus the LDO and switch chosen for this design.
-Prices are the ~100-piece tiers researched there.
+Every line was verified on 2026-10-30 against **both** LCSC (listed and in
+stock) and the **JLCPCB SMT assembly library** (assembly-supported, in
+stock), preferring JLCPCB **Basic > Preferred > Extended**. The schematic
+carries an `LCSC` and an `MPN` property for every assembled part; the
+quote BOM (`../quote/node-bom-jlcpcb.csv`) is generated from them.
+Stock figures are a 2026-10-30 snapshot — re-check at order time.
 
-| Ref | Part | LCSC | Note |
-|---|---|---|---|
-| U1 | ATtiny1616-MNR | C507118 | $0.6081 @100+ |
-| U2 | Bosch BMM150 | C171681 | $0.6933 @100+ |
-| D1 | WS2812B-MINI-V3/W | C527089 | $0.0509 @100+ |
-| U3 | DW01A | C42459937 | $0.0237 @100+ |
-| Q1 | FS8205A | C2830320 | $0.0256 @100+ |
-| BT1 | MYOUNG MY-2032-10 holder | C964827 | $0.0845 @100+ |
-| J2 | JST S4B-PH-SM4-TB(LF)(SN) PH 4-pin SMD | C265102 | $0.2424 @50+ (LCSC, verified 2026-10-30) |
-| — | LIR2032 cell | not stocked at LCSC | ≈$1.26 (PowerStream), buy separately |
-| U4 | Torex XC6206P302MR (3.0 V LDO, SOT-23) | **TODO-verify** | Real Torex part; pinout confirmed from the LCSC-hosted datasheet, but the exact LCSC C-number for this voltage variant could not be confirmed during design — check LCSC before ordering |
-| SW1 | Slide switch SPDT (MSK12C02 class) | **TODO-verify** | Pick a stocked part whose footprint matches (3 signal pins, 2 mount pads) |
-| R1 100 Ω, R2 1 kΩ, R3 300 Ω, R4/R5 4.7 kΩ | 0603 | generic basic parts | |
-| C1–C7 100 nF, C2 10 µF | 0603 | generic basic parts | C2 may be 0805 if 10 µF 0603 stock is poor |
+| Ref | Part (MPN) | LCSC | JLCPCB class | Notes |
+|---|---|---|---|---|
+| U1 | Microchip ATtiny1616-MNR | C507118 | Extended | in stock both |
+| U2 | Bosch BMM150 | C171681 | Extended | JLCPCB flags **X-ray inspection required** (WLCSP) — the baseline quote carried a $51 X-ray line; unavoidable |
+| D1 | Worldsemi WS2812B-MINI-V3/W | C527089 | Extended | **Standard PCBA only** (not Economic); MSL 5 → JLCPCB baking fee applies; unavoidable |
+| U3 | KUU DW01A | C42459937 | Extended | The 9-digit number is real — verified on LCSC and matched in the baseline quote ($2.4486/102 pcs). Supports 0V-battery charging, over-discharge cutoff 2.4 V. (Fortune DW01A-G C61503 is out of stock at JLCPCB and lacks 0V-charge.) |
+| Q1 | TECH PUBLIC FS8205A | C2830320 | Extended | common-source dual N-FET, in stock both (C32254 elsewhere is FS8205 without "A", out of stock) |
+| U4 | Torex XC6206P302MR-G (3.0 V LDO, SOT-23) | C9972 | Extended | Genuine Torex; pinout 1=GND, 2=VOUT, 3=VIN matches the routed footprint (see CPL section). The baseline quote matched a clone listing (C5148691) — C9972 is the pinout-verified original |
+| SW1 | SHOU HAN MSK12C02 (SPDT slide switch) | C431540 | Extended | The older C16168 listing is delisted at LCSC; C431540 is the live number. This fixes the baseline quote's only unmatched line |
+| BT1 | MYOUNG MY-2032-10 holder | C964827 | Extended | cell itself is NOT stocked at LCSC — buy separately (≈$1.26 PowerStream / AliExpress) |
+| J2 | JST S4B-PH-SM4-TB(LF)(SN) | C265102 | Extended | $0.2424 @50+ |
+| C1,C2,C6,C7 | Samsung CL10B104KB8NNNC 100 nF 50 V X7R 0603 | C1591 | Extended | See exception note below |
+| C3 | Samsung CL10A106KP8NNNC 10 µF 10 V X5R 0603 | C19702 | **Basic** | 10 V rating is fine on the 4.2 V-max rail |
+| C4,C5 | Samsung CL10A105KB8NNNC 1 µF 50 V X5R 0603 | C15849 | **Basic** | |
+| R1 | UNI-ROYAL 0603WAF1000T5E 100 Ω | C22775 | **Basic** | |
+| R2 | UNI-ROYAL 0603WAF1001T5E 1 kΩ | C21190 | **Basic** | |
+| R3 | UNI-ROYAL 0603WAF3000T5E 300 Ω | C23025 | **Basic** | |
+| R4,R5 | UNI-ROYAL 0603WAF4701T5E 4.7 kΩ | C23162 | **Basic** | |
+
+**100 nF exception:** the canonical JLCPCB **Basic** 100 nF 0603 (Yageo
+CC0603KRX7R9BB104, C14663) showed **OutOfStock at LCSC retail** on
+2026-10-30 (checked twice), failing the all-LCSC-in-stock rule. C1591 is
+the identical spec (100 nF / 50 V / X7R / 0603) with ~7.8 M pieces at LCSC
+and JLCPCB SMT stock, so it was chosen despite Extended class. All other
+passives are JLCPCB Basic. No BOM function lacked an assembly-supported
+option — no circuit part had to be substituted.
+
+**Panel note (from the baseline quote):** with "Panel by JLCPCB", JLCPCB's
+preset set PCB quantity to 20 panels while PCBA was quoted at 17 — check
+the panel count on the final order so bare-PCB and assembly quantities
+agree with the decided 3×2 panel plan.
+
+## CPL / JLCPCB assembly data
+
+`../quote/node-cpl-jlcpcb.csv` is generated from `kicad-cli pcb export pos`
+(mm), **in the same absolute coordinate frame as the gerber export**
+(board outline spans X 0…32 mm, Y −32…0 mm in that frame). The previous
+CPL used board-corner Y-down coordinates, which mirrored the overlay
+against the gerbers in JLCPCB's preview — that is fixed.
+
+**Rotation basis:** all footprints sit at 0° on the board (verified from
+the board file — the layout is fully axis-aligned), so every CPL rotation
+is 0.0 as a board fact, not a placeholder. For the standard KiCad library
+footprints (0603, SOT-23, SOT-23-6, VQFN-20, JST PH) KiCad's drawn
+orientation matches the JLCPCB/EasyEDA library orientation at rotation 0
+(pin 1 top-left / NW). For the custom footprints, pin-1 (or key pad)
+directions in board coordinates (viewed from the top, +X east, +Y south)
+are:
+
+| Part | Key pad position (board view) |
+|---|---|
+| D1 (WS2812B-MINI) | pad 1 = VDD at **NW**; pads run 1 NW → 2 SW → 3 SE (GND) → 4 NE (DIN) |
+| U2 (BMM150) | ball **A1 at NW** corner; rows A→E run west→east, columns 1→5 north→south |
+| U1 (VQFN-20) | pin 1 on the west edge, northernmost west-side pad; numbering CCW from there |
+| U4 (SOT-23) | pin 1 (GND) NW, pin 2 (VOUT) SW, pin 3 (VIN) east-center |
+| SW1 (MSK12C02) | pad 1 (VBAT_RAW in) west, pad 2 (COM → VBAT) center, pad 3 east (NC); mount tabs on the south side |
+| J2 (bottom side) | pin 1 (GND) at the **west** end in board coordinates (see v3 pin-mapping note); pins 1→4 run west→east |
+| BT1 (bottom side) | pad 1 (cell +, VBAT_RAW) contacts at east+west ends (symmetric), pad 2 (CELL_N) at center — 0°/180° equivalent |
+
+At order time, confirm D1 / U2 / J2 in JLCPCB's assembly preview against
+this table (a 10-second visual check); if a preview shows one rotated,
+correct only that line's Rotation by the observed multiple of 90°.
 
 ## Validation performed (KiCad 7.0.11, kicad-cli + pcbnew)
 
@@ -189,6 +241,18 @@ validation was done with the netlist exporter, pcbnew, and scripted geometry che
   `appearance-bottom.png`; connector and holder models are the same
   approximations as in v2 — the real side-entry J2 is smaller than the
   model shown).
+- **Parts standardization (2026-10-30)**: every BOM line now has a
+  concrete LCSC part verified in stock at LCSC **and** in the JLCPCB SMT
+  assembly library (see the BOM section). Schematic-only change: `LCSC`
+  and `MPN` properties set on all 21 assembled symbols, U4 value updated
+  to XC6206P302MR-G, SW1 value updated to MSK12C02. The PCB was not
+  touched (no part's footprint or pinout changed). Re-verified after the
+  edit: ERC identical to before (118 warnings / 0 errors, same classes),
+  netlist exports cleanly (22 comps), KiCad 8.0.9 DRC on the delivered
+  PCB still **0 errors / 0 unconnected** (22 library-class warnings =
+  the accepted set below). Quote BOM regenerated from the schematic,
+  CPL regenerated in the gerber coordinate frame (see CPL section),
+  gerbers + drill re-exported and `node-gerbers.zip` refreshed.
 
 ## Accepted DRC warnings (final board)
 
@@ -282,9 +346,16 @@ Firmware mitigations (requirements for the node firmware):
    verify pad positions against the MYOUNG datasheet or a sample part.
 4. **WS2812B-MINI pad order assumed** (1=VDD, 2=DOUT, 3=VSS, 4=DIN CCW from
    top-left). Verify against the Worldsemi/OPSCO datasheet.
-5. **LDO LCSC number unverified** (see BOM). Also confirm 3.0 V variant stock.
-6. **Slide switch part/footprint unverified** — choose the exact LCSC part and
-   adjust the footprint if its pin geometry differs from the generic one used.
+5. ~~LDO LCSC number unverified~~ — **Resolved 2026-10-30** (standardization
+   pass): U4 is Torex XC6206P302MR-G, **LCSC C9972**, in stock at LCSC and
+   in the JLCPCB SMT library; its SOT-23 pinout (1=GND, 2=VOUT, 3=VIN)
+   matches the routed footprint as placed (verified from the board file).
+6. **Slide switch footprint geometry** — part fixed 2026-10-30: SHOU HAN
+   MSK12C02, **LCSC C431540** (in stock at LCSC and JLCPCB SMT). The custom
+   footprint was drawn for exactly this part (3 signal pads + mount tabs,
+   7-pin MSK12C02 class), so no footprint swap was needed; like the other
+   custom footprints (items 3, 4), verify the pad geometry against a
+   sample part or the datasheet drawing before fab.
 7. **BMM150 escape routing**: 0.4 mm-pitch WLCSP checkerboard — diagonal ball
    spacing is 0.566 mm, so 0.15 mm tracks fit between balls. The breakout is
    now fully routed and DRC-clean (2026-10-30); JLCPCB standard process handles
